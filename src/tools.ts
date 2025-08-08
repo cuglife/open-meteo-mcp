@@ -203,7 +203,7 @@ export const AIR_QUALITY_TOOL: Tool = {
 
 export const MARINE_WEATHER_TOOL: Tool = {
   name: 'marine_weather',
-  description: 'Get marine weather forecast including wave height, wave period, wave direction and sea surface temperature.',
+  description: 'Get comprehensive marine weather forecast including waves, ocean currents, sea level, and sea surface temperature with complete coverage of Open-Meteo Marine Weather API.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -224,40 +224,65 @@ export const MARINE_WEATHER_TOOL: Tool = {
         items: {
           type: 'string',
           enum: [
+            // Primary wave data
             'wave_height', 'wave_direction', 'wave_period',
+            // Wind wave components
             'wind_wave_height', 'wind_wave_direction', 'wind_wave_period',
-            'swell_wave_height', 'swell_wave_direction', 'swell_wave_period',
-            'sea_surface_temperature'
+            // Primary swell wave components  
+            'swell_wave_height', 'swell_wave_direction', 'swell_wave_period', 'swell_wave_peak_period',
+            // Secondary swell wave components
+            'secondary_swell_wave_height', 'secondary_swell_wave_direction', 'secondary_swell_wave_period',
+            // Tertiary swell wave components
+            'tertiary_swell_wave_height', 'tertiary_swell_wave_direction', 'tertiary_swell_wave_period',
+            // Wind wave peak period
+            'wind_wave_peak_period',
+            // Ocean currents
+            'ocean_current_velocity', 'ocean_current_direction',
+            // Sea level and surface data
+            'sea_surface_temperature', 'sea_level_height_msl', 'invert_barometer_height'
           ]
         },
-        description: 'Marine weather variables to retrieve'
+        description: 'Hourly marine weather variables to retrieve. Includes waves (primary, wind, swell systems), ocean currents, sea level, and temperature data.'
       },
       daily: {
         type: 'array',
         items: {
           type: 'string',
           enum: [
-            'wave_height_max', 'wind_wave_height_max', 'swell_wave_height_max'
+            // Maximum wave heights
+            'wave_height_max', 'wind_wave_height_max', 'swell_wave_height_max',
+            // Dominant wave directions
+            'wave_direction_dominant', 'wind_wave_direction_dominant', 'swell_wave_direction_dominant',
+            // Maximum wave periods
+            'wave_period_max', 'wind_wave_period_max', 'swell_wave_period_max',
+            // Maximum peak periods
+            'wind_wave_peak_period_max', 'swell_wave_peak_period_max'
           ]
         },
-        description: 'Daily marine weather variables to retrieve'
+        description: 'Daily aggregated marine weather variables including maximum heights, dominant directions, and maximum periods.'
+      },
+      length_unit: {
+        type: 'string',
+        enum: ['metric', 'imperial'],
+        default: 'metric',
+        description: 'Length unit system: metric (meters, km/h) or imperial (feet, mph)'
       },
       timezone: {
         type: 'string',
-        description: 'Timezone for timestamps'
+        description: 'Timezone for timestamps (e.g., UTC, Europe/Paris, America/New_York)'
       },
       past_days: {
         type: 'integer',
-        minimum: 1,
-        maximum: 7,
-        description: 'Include past days data'
+        minimum: 0,
+        maximum: 92,
+        description: 'Include past days data (0-92 days)'
       },
       forecast_days: {
         type: 'integer',
         minimum: 1,
         maximum: 16,
         default: 7,
-        description: 'Number of forecast days'
+        description: 'Number of forecast days (1-16 days for marine data)'
       }
     },
     required: ['latitude', 'longitude']
@@ -684,8 +709,6 @@ export const ALL_TOOLS: Tool[] = [
   WEATHER_ARCHIVE_TOOL,
   AIR_QUALITY_TOOL,
   MARINE_WEATHER_TOOL,
-  ELEVATION_TOOL,
-  FLOOD_FORECAST_TOOL,
   SEASONAL_FORECAST_TOOL,
   CLIMATE_PROJECTION_TOOL,
   ENSEMBLE_FORECAST_TOOL,

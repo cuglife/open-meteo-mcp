@@ -143,25 +143,47 @@ export const AirQualityParamsSchema = CoordinateSchema.extend({
   forecast_days: z.number().min(1).max(16).optional(),
 });
 
-// Marine variables
+// Marine variables with complete Open-Meteo API coverage
 export const MarineHourlyVariablesSchema = z.array(z.enum([
+  // Primary wave data
   'wave_height', 'wave_direction', 'wave_period',
+  // Wind wave components
   'wind_wave_height', 'wind_wave_direction', 'wind_wave_period',
-  'swell_wave_height', 'swell_wave_direction', 'swell_wave_period',
-  'sea_surface_temperature'
+  // Primary swell wave components  
+  'swell_wave_height', 'swell_wave_direction', 'swell_wave_period', 'swell_wave_peak_period',
+  // Secondary swell wave components
+  'secondary_swell_wave_height', 'secondary_swell_wave_direction', 'secondary_swell_wave_period',
+  // Tertiary swell wave components
+  'tertiary_swell_wave_height', 'tertiary_swell_wave_direction', 'tertiary_swell_wave_period',
+  // Wind wave peak period
+  'wind_wave_peak_period',
+  // Ocean currents
+  'ocean_current_velocity', 'ocean_current_direction',
+  // Sea level and surface data
+  'sea_surface_temperature', 'sea_level_height_msl', 'invert_barometer_height'
 ])).optional();
 
 export const MarineDailyVariablesSchema = z.array(z.enum([
-  'wave_height_max', 'wind_wave_height_max', 'swell_wave_height_max'
+  // Maximum wave heights
+  'wave_height_max', 'wind_wave_height_max', 'swell_wave_height_max',
+  // Dominant wave directions
+  'wave_direction_dominant', 'wind_wave_direction_dominant', 'swell_wave_direction_dominant',
+  // Maximum wave periods
+  'wave_period_max', 'wind_wave_period_max', 'swell_wave_period_max',
+  // Maximum peak periods
+  'wind_wave_peak_period_max', 'swell_wave_peak_period_max'
 ])).optional();
+
+export const LengthUnitSchema = z.enum(['metric', 'imperial']).default('metric');
 
 export const MarineParamsSchema = CoordinateSchema.extend({
   hourly: MarineHourlyVariablesSchema,
   daily: MarineDailyVariablesSchema,
+  length_unit: LengthUnitSchema,
   timezone: z.string().optional(),
   timeformat: TimeFormatSchema,
-  past_days: z.number().min(1).max(7).optional(),
-  forecast_days: z.number().min(1).max(16).optional(),
+  past_days: z.number().min(0).max(92).optional(),
+  forecast_days: z.number().min(1).max(8).optional(),
 });
 
 // Flood variables
